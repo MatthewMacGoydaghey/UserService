@@ -3,13 +3,14 @@ import { createExpressServer, useExpressServer } from 'routing-controllers'
 import { UserController } from './controllers/userController'
 import { DB } from './dataBase'
 import bodyParser from 'body-parser'
+import path from 'path'
 
 DB.initialize()
 .then(() => {
-  console.log("Data Source has been initialized!")
+  console.log("Database has been initialized")
 })
 .catch((err) => {
-  console.error("Error during Data Source initialization:", err)
+  console.error("Error during Database initialization:", err)
 })
 
 const app = createExpressServer({
@@ -19,6 +20,7 @@ const app = createExpressServer({
 const server = express()
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({extended: true}))
+server.use(express.static(path.join(__dirname, "images")))
 
 useExpressServer(server, {})
 

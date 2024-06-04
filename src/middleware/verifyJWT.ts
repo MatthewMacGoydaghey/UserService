@@ -2,9 +2,9 @@ import * as jwt from "jsonwebtoken"
 import { NextFunction, Request, Response } from "express"
 
 
-const ACCESS_SECRET = 'dsa'
+export const ACCESS_SECRET = 'dsa'
 
-interface ModifiedRequest extends Request {
+export interface ModifiedRequest extends Request {
   user: any
 }
 
