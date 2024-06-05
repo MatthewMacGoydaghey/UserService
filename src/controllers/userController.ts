@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, QueryParam, Req, UploadedFile, UseBefore } from 'routing-controllers';
+import { Body, Controller, Get, HttpCode, JsonController, Param, Post, Put, QueryParam, Req, UploadedFile, UseBefore } from 'routing-controllers';
    import 'reflect-metadata';
 import { UserService } from '../handlers/userService';
 import { RegUserDTO } from '../DTO/regUserDTO';
@@ -14,9 +14,10 @@ export interface File {
    mimetype: string
 }
 
-   @Controller()
+   @JsonController()
    export class UserController {
 
+     @HttpCode(201)
      @Post('/user/register')
      regUser (@Body() body: RegUserDTO) {
       return userService.regUser(body)
@@ -28,7 +29,6 @@ export interface File {
      }
 
      @UseBefore(authorization)
-
      @Put('/profile/:id')
      updateProfile(@Param('id') id: number, @Body() body: UpdProfileDTO, @Req() req: ModifiedRequest, @UploadedFile('image') image: File) {
       return userService.updateUser(id, body, req.user, image)

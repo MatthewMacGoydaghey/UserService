@@ -14,7 +14,9 @@ DB.initialize()
 })
 
 const app = createExpressServer({
-  controllers: [UserController]
+  controllers: [UserController],
+  classTransformer: true,
+  validation: true
 })
 const server = express()
 server.use(bodyParser.json())

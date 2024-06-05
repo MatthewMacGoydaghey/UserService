@@ -4,7 +4,7 @@ import { DB } from "../dataBase";
 import { User } from "../entity/userEntity";
 import * as bcrypt from 'bcrypt'
 import * as jwt from "jsonwebtoken"
-import { ACCESS_SECRET, ModifiedRequest } from "../middleware/verifyJWT";
+import { ACCESS_SECRET } from "../middleware/verifyJWT";
 import { LoginDTO } from "../DTO/loginDTO";
 import { UpdProfileDTO } from "../DTO/updateProfileDTO";
 import { File } from "../controllers/userController";
@@ -20,14 +20,14 @@ export class UserService {
 
 
   async regUser(body: RegUserDTO) {
-    const {name, email, password} = body
-    if (!name || !email || !password) {
-      return new BadRequestError(`name, email and password are required`)
-    }
     const newUser = new User()
-    newUser.name = name
-    newUser.email = email
-    const hashedPassword = await bcrypt.hash(password, 5)
+    newUser.name = body.name
+    newUser.email = body.email
+    const duplicate = await userRepository.findOneBy({email: body.email})
+    if (duplicate) {
+      throw new BadRequestError(`User with email ${body.email} already exists`)
+    }
+    const hashedPassword = await bcrypt.hash(body.password, 5)
     newUser.password = hashedPassword
     const savedUser = await userRepository.save(newUser)
     const payload = {
@@ -39,16 +39,13 @@ export class UserService {
 
   async login(body: LoginDTO) {
     const {email, password} = body
-    if (!email || !password) {
-      return new BadRequestError(`email and password are required`)
-    }
     const foundUser = await userRepository.findOneBy({email})
     if (!foundUser) {
-      return new NotFoundError(`User with email ${email} not found`)
+      throw new NotFoundError(`User with email ${email} not found`)
     }
     const correctPassword = bcrypt.compareSync(password, foundUser.password)
     if (!correctPassword) {
-      return new ForbiddenError(`Incorrect password`)
+      throw new ForbiddenError(`Incorrect password`)
     }
     const payload = {
       userID: foundUser.id
@@ -59,22 +56,19 @@ export class UserService {
 
 
   async updateUser(id: number, body: UpdProfileDTO, user: payload, file: File) {
-    const {surname, email, gender, photo} = body
+    const {surname, email, gender} = body
     if (id !== user.userID) {
-      return new ForbiddenError('You can only update your profile')
+      throw new ForbiddenError('You can only update your profile')
     }
     const foundUser = await userRepository.findOneBy({id})
     if (!foundUser) {
-      return new NotFoundError('User not found')
+      throw new NotFoundError('User not found')
     }
     foundUser.surname = surname
     foundUser.email = email
     foundUser.gender = gender
     if (file) {
-      const result = this.uploadFile(file)
-      if (!result) {
-        return new BadRequestError('Incorrect size (>10mb) or mimetype (image/jpeg only) of file')
-      }
+      this.uploadFile(file)
       foundUser.photo = file.originalname
   }
     const updatedUser = await userRepository.save(foundUser)
@@ -84,7 +78,7 @@ export class UserService {
   async findUser(id: number) {
     const foundUser = await userRepository.findOneBy({id})
     if (!foundUser) {
-      return new NotFoundError('User not found')
+      throw new NotFoundError('User not found')
     }
     return foundUser
   }
@@ -113,13 +107,12 @@ export class UserService {
 
   private uploadFile(file: File) {
     if (file.size > 1024 * 1024 || file.mimetype !== 'image/jpeg') {
-      return false
+      throw new BadRequestError('Incorrect size (>10mb) or mimetype (image/jpeg only) of file')
     }
     const filePath = path.resolve(__dirname, '..', 'images')
 if (!fs.existsSync(filePath)) {
   fs.mkdirSync(filePath, {recursive: true})
 }
 fs.writeFileSync(path.join(filePath, file.originalname), file.buffer)
-  return file.originalname
   }
 }
