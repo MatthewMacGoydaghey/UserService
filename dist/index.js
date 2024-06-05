@@ -23,7 +23,7 @@ const app = (0, routing_controllers_1.createExpressServer)({
 const server = (0, express_1.default)();
 server.use(body_parser_1.default.json());
 server.use(body_parser_1.default.urlencoded({ extended: true }));
-server.use(express_1.default.static(path_1.default.join(__dirname, "images")));
+server.use('/uploads', express_1.default.static(path_1.default.resolve(__dirname, 'images')));
 (0, routing_controllers_1.useExpressServer)(server, {});
 const PORT = 3000;
 server.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));

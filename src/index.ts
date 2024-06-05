@@ -20,8 +20,7 @@ const app = createExpressServer({
 const server = express()
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({extended: true}))
-server.use(express.static(path.join(__dirname, "images")))
-
+server.use('/uploads', express.static(path.resolve(__dirname, 'images')))
 useExpressServer(server, {})
 
 const PORT = 3000

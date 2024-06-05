@@ -111,7 +111,6 @@ export class UserService {
 
 
   private uploadFile(file: File) {
-    console.log(file.size > 1)
     if (file.size > 1024 * 1024 || file.mimetype !== 'image/jpeg') {
       return false
     }
