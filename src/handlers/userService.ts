@@ -22,7 +22,7 @@ export class UserService {
   async regUser(body: RegUserDTO) {
     const {name, email, password} = body
     if (!name || !email || !password) {
-      return new BadRequestError(`name, email or password not found`)
+      return new BadRequestError(`name, email and password are required`)
     }
     const newUser = new User()
     newUser.name = name
@@ -40,7 +40,7 @@ export class UserService {
   async login(body: LoginDTO) {
     const {email, password} = body
     if (!email || !password) {
-      return new BadRequestError(`email or password not found`)
+      return new BadRequestError(`email and password are required`)
     }
     const foundUser = await userRepository.findOneBy({email})
     if (!foundUser) {
@@ -88,6 +88,7 @@ export class UserService {
     }
     return foundUser
   }
+  
 
   async findUsers(page: number) {
     let offset = 0

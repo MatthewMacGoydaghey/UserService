@@ -1,11 +1,10 @@
-import { Body, Controller, CurrentUser, Get, Param, Post, Put, QueryParam, Req, UploadedFile, UseBefore } from 'routing-controllers';
+import { Body, Controller, Get, Param, Post, Put, QueryParam, Req, UploadedFile, UseBefore } from 'routing-controllers';
    import 'reflect-metadata';
 import { UserService } from '../handlers/userService';
 import { RegUserDTO } from '../DTO/regUserDTO';
 import { ModifiedRequest, authorization } from '../middleware/verifyJWT';
 import { LoginDTO } from '../DTO/loginDTO';
 import { UpdProfileDTO } from '../DTO/updateProfileDTO';
-import { User } from '../entity/userEntity';
 const userService = new UserService()
 
 export interface File {
@@ -19,8 +18,7 @@ export interface File {
    export class UserController {
 
      @Post('/user/register')
-     regUser (@Body({validate: true}) body: RegUserDTO) {
-      console.log(body)
+     regUser (@Body() body: RegUserDTO) {
       return userService.regUser(body)
      }
 

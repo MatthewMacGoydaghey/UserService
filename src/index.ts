@@ -14,8 +14,7 @@ DB.initialize()
 })
 
 const app = createExpressServer({
-  controllers: [UserController],
-  validation: true
+  controllers: [UserController]
 })
 const server = express()
 server.use(bodyParser.json())
